@@ -1,0 +1,111 @@
+﻿@{
+    ViewData["Title"] = "Privacy Policy";
+}
+<h1>@ViewData["Title"]</h1>
+@{
+    ViewData["Title"] = "Privacy Policy";
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>Use this page to detail your site's privacy policy.</p>
+<div class="form-add">
+    <form class="main-form">
+        <input type="number" class="form-control" id="Id" name="Id" hidden value="0">
+        @*<div class="form-group ">
+                <label for="OrderName">Order Name</label>
+                <input type="text" class="form-control" id="OrderName" name="OrderName" OrderNameplaceholder="Order Name">
+            </div>*@
+        <div class="form-group ">
+            <label for="ProductId">Product</label>
+            <select class="form-control" id="ProductId" name="ProductId">
+                @foreach (var item in Model.Product)
+                {
+                    <option>1</option>
+                }
+            </select>
+        </div>
+        <div class="form-group ">
+            <label for="CustomerId">Customer</label>
+            <select class="form-control" id="CustomerId" name="CustomerId">
+                @foreach (var item in Model.Customer)
+                {
+                    <option>1</option>
+                }
+            </select>
+        </div>
+        <div class="form-group ">
+            <label for="CreatedDate">Order Date</label>
+            <input type="date" class="form-control" id="CreatedDate" name="CreatedDate">
+        </div>
+        <div class="form-group ">
+            <label for="CreatedDate">Amount</label>
+            <input type="number" class="form-control" id="Amount" name="Amount">
+        </div>
+        <div class="form-group ">
+            <label for="CreatedDate">Desc</label>
+            <input type="text" class="form-control" id="Desc" name="Desc">
+        </div>
+        <button type="button" onclick="AddOrUpdate('/Home/AddOrUpdate')" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+<script>
+    function AddOrUpdate(url) {
+        let param = new Object();
+        $('.main-form input').each(function () {
+            if ($(this).attr('name')) {
+                if ($(this).attr('type') == "number")
+                    param[$(this).attr('name')] = parseInt($(this).val());
+                else
+                   param[$(this).attr('name')] = $(this).val();
+            }
+        });
+        param.ProductId = parseInt($("select[name='ProductId'] option:selected").val());
+        param.CustomerId = parseInt($("select[name='CustomerId'] option:selected").val());
+        console.log('param....', param);
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: JSON.stringify(param),
+            dataType: "json",
+            contentType: "application/json",
+            beforeSend: function () {
+            },
+            success: function (res) {
+                if (res != null) {
+                    if (res.status == 0) {
+                        if ($('#Id').val() == 0)
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Thêm thành công',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                        else
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: 'Sửa thành công',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+                    }
+                    else {
+                        if ($('#Id').val() == 0)
+                            console.log("Thêm thất bại");
+                        else
+                            console.log("Sửa thất bại");
+                    }
+                }
+                
+            },
+            error: function (e) {
+                console.log(e);
+            },
+            complete: function () {
+
+            }
+        })
+    }
+</script>

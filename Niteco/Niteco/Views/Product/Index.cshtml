@@ -1,0 +1,108 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    var temp = "--";
+}
+<div class="form-add">
+    <form class="main-form">
+        <input type="number" class="form-control" id="Id" name="Id" hidden value="0">
+        <div class="form-group ">
+            <label for="OrderName">Product Name</label>
+            <input type="text" class="form-control" id="Name" name="Name" OrderNameplaceholder="Product Name">
+        </div>
+        <div class="form-group ">
+            <label for="CustomerId">Category</label>
+            <select class="form-control" id="CategoryId" name="CategoryId">
+                @foreach (var item in Model.Category)
+                {
+                    <option value="@item.Id">
+                        @if (item.Title != null)
+                        {
+                            @item.Title
+                        }
+                        else
+                        {
+                            @temp
+                        }
+                    </option>
+                }
+            </select>
+        </div>
+        <div class="form-group ">
+            <label for="CreatedDate">Amount</label>
+            <input type="number" class="form-control" id="Amount" name="Amount">
+        </div>
+        <div class="form-group ">
+            <label for="CreatedDate">Price</label>
+            <input type="number" class="form-control" id="Price" name="Price">
+        </div>
+        <div class="form-group ">
+            <label for="CreatedDate">Desc</label>
+            <input type="text" class="form-control" id="Desc" name="Desc">
+        </div>
+        <button type="button" onclick="AddOrUpdate('/Product/AddOrUpdate')" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+@section Scripts{
+
+    <script>
+        function AddOrUpdate(url) {
+            let param = new Object();
+            $('.main-form input').each(function () {
+                if ($(this).attr('name')) {
+                    if ($(this).attr('type') == "number")
+                        param[$(this).attr('name')] = parseInt($(this).val());
+                    else
+                        param[$(this).attr('name')] = $(this).val();
+                }
+            });
+            param.CategoryId = parseInt($("select[name='CategoryId'] option:selected").val());
+            console.log('param....', param);
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: JSON.stringify(param),
+                dataType: "json",
+                contentType: "application/json",
+                beforeSend: function () {
+                },
+                success: function (res) {
+                    if (res != null) {
+                        if (res.status == 0) {
+                            if ($('#Id').val() == 0)
+                                Swal.fire({
+                                    position: 'center',
+                                    icon: 'success',
+                                    title: 'Thêm thành công',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                })
+                            else
+                                Swal.fire({
+                                    position: 'center',
+                                    icon: 'success',
+                                    title: 'Sửa thành công',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                })
+                        }
+                        else {
+                            if ($('#Id').val() == 0)
+                                console.log("Thêm thất bại");
+                            else
+                                console.log("Sửa thất bại");
+                        }
+                    }
+
+                },
+                error: function (e) {
+                    console.log(e);
+                },
+                complete: function () {
+
+                }
+            })
+        }
+    </script>
+}

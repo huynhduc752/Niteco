@@ -1,0 +1,135 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div class="body-project">
+    <form>
+        <div class="form-row align-items-center">
+            <div class="col-auto">
+                <label class="sr-only" for="inlineFormInput">Order Name</label>
+                <input type="text" class="form-control mb-2" name="OrderName" id="OrderName" placeholder="name">
+            </div>
+            <div class="col-auto">
+                <label class="sr-only" for="inlineFormInput">Price</label>
+                <input type="text" class="form-control mb-2" name="Price" id="Price" placeholder="0">
+            </div>
+            <div class="col-auto">
+                <label class="sr-only" for="inlineFormInput">Amout</label>
+                <input type="text" class="form-control mb-2" name="Amount" id="Amount" placeholder="0">
+            </div>
+            <div class="col-auto">
+                <button type="button" onclick="GetDataOrder('Order/GetData')" class="btn btn-primary mb-2">Search</button>
+            </div>
+            @*<div class="col-auto">
+                <a href="~/Order/AddOrder" class="btn btn-primary mb-2">Register Order</a>
+            </div>*@
+        </div>
+    </form>
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Order Name</th>
+                    <th scope="col">Pro Name</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Desc</th>
+
+                </tr>
+            </thead>
+            <tbody class="data-table">
+
+
+                <tr>
+                    <th scope="row">2</th>
+                    <td>Jacob</td>
+                    <td>Thornton</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td>Larry</td>
+                    <td>the Bird</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            GetDataOrder('/Order/GetData');
+        })
+        function RequestParam(name, price, amount) {
+            var param = new Object();
+            param.Name = (name != '' ? name : '');
+            param.Price = (price != '' ? price : '');
+            param.Amount = (amount != '' ? amount : '');
+            return param;
+        }
+        function DataRow(data, i) {
+            var tr = `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${data.orderName}</td>
+                        <td>${data.productName}</td>
+                        <td>${data.orderAmount}</td>
+                        <td>${data.cateTitle}</td>
+                        <td>${data.price}</td>
+                        <td>${data.createdDate}</td>
+                        <td>${data.desc}</td>
+                    </tr>
+                        `;
+            $('.data-table').append(tr);
+        }
+        function SetRow(arr) {
+            for (var i = 0; i < arr.length; i++) {
+                DataRow(arr[i], i);
+            }
+        }
+        function GetDataOrder(url) {
+            var param = new Object();
+            param.Name = $('#OrderName').val();
+            param.Price = $('#Price').val();
+            param.Amount = $('#Amount').val();
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: JSON.stringify(param),
+                dataType: "json",
+                contentType: "application/json",
+                beforeSend: function () {
+                },
+                success: function (res) {
+                    console.log(res);
+                    if (res != null) {
+                        $('.data-table').html('');
+                        SetRow(res);
+                    }
+                    else {
+
+                        Swal.fire({
+                            position: 'center',
+                            icon: 'error',
+                            title: 'Không thành công',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
+                },
+                error: function (e) {
+                    console.log(e);
+                },
+                complete: function () {
+
+                }
+            })
+        }
+    </script>
+}
